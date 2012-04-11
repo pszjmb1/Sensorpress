@@ -3,7 +3,7 @@
 	Plugin Name: Shadow Data View
 	Plugin URI: n/a
 	Description: Simple data viewer for the ShadowPress DB
-	Version: 1.0
+	Version: 0.2
 	Author: JMB
 	Author URI: n/a
 	License: AGPLv3
@@ -27,6 +27,8 @@
 */
 
 	include('settings.php');
+	include_once(ABSPATH . WPINC . '/class-IXR.php');
+	include_once(ABSPATH . WPINC . '/class-wp-xmlrpc-server.php');
 	/**
 	 * Exits the plugin if the WP version is lower than $minver 
 	 * @param $minver is the minimum version of Wordpress supported
@@ -47,11 +49,21 @@
 		 */
 		class Horz_JMB_ShadowDataView{
 			var $plugin_url;
+			private $settings;
+			private $wpdb_shadow;
+			private $wpserver;
 			
 			function Horz_JMB_ShadowDataView(){
+				$this->settings = new Horz_JMB_Settings();
+				$this->wpdb_shadow = new wpdb($this->settings->DB_USER, 
+						$this->settings->DB_PASSWORD, $this->settings->DB_NAME, 
+						$this->settings->DB_HOST);
+				$this->wpserver = new wp_xmlrpc_server();
+				
 				$this->plugin_url = trailingslashit(WP_PLUGIN_URL.'/'.
 						dirname(plugin_dir_path(__FILE__)));
 				
+				//$this->registerShortcodes();
 				add_shortcode('view-data', array(&$this,'display'));
 			}
 			
@@ -94,22 +106,62 @@
 			
 			function display(){
 				//global $wpdb;
-				$settings = new Horz_JMB_Settings(); 
-				$wpdb_shadow = new wpdb($settings->DB_USER, $settings->DB_PASSWORD, $settings->DB_NAME, $settings->DB_HOST);
 				$reading='';
 
 				$output='<div class="viewdata"><table><tbody>';
-				$myheadings = $wpdb_shadow->get_results( "show columns from horz_sp_reading" );
+				$myheadings = $this->wpdb_shadow->get_results( "show columns from horz_sp_reading" );
 				$output =$this->displayRowInHTMLTable($myheadings,$output,'th');
-				$myrows = $wpdb_shadow->get_results( "SELECT * FROM horz_sp_reading LIMIT 10" );
+				$myrows = $this->wpdb_shadow->get_results( "SELECT * FROM horz_sp_reading LIMIT 10" );
 				$output = $this->displayRowInHTMLTable($myrows,$output);
 				$output=$output.'</tbody></table></div>';
+				//$a = new wp_xmlrpc_server();
+				//return $a->sayHello('');
 				return $output;
 			}	
+			
+			/**
+			 * Retrieve readings. Only allow returns of up to 10000 records
+			 *
+			 * @param array $args Method parameters.
+			 * @return array
+			 */
+			function select($args) {		
+				$readings = array();		
+				$this->wpserver->escape(&$args);
+				$username	= $args[0];
+				$password	= $args[1];
+				$table		= $args[2];
+				$limit		= (int) $args[3];
+			
+				if ( !$user = $this->wpserver->login($username, $password) ){
+					array_push($readings,$this->wpserver->error);
+					return $readings;
+				}
+				
+				if(!$limit || $limit <1 || $limit > 9999)
+					$limit = 1;
+				
+				$query = "CALL selectrecent_$table( $limit )";
+				
+				//array_push($readings,$query);
+				$results= $this->wpdb_shadow->get_results( $query );
+				foreach($results as $result) {
+					array_push($readings,$result);
+				}
+				
+				return $readings;
+				
+			}
 				
 			function add_new_xmlrpc_methods( $methods ) {
-				$methods['shadowpress.display'] =  array(&$this, 'display');//'display';
+				$methods['shadowpress.display'] =  array(&$this, 'display');
+				$methods['shadowpress.select'] =  array(&$this, 'select');
+				
 				return $methods;
+			}
+			
+			function registerShortcodes(){
+				add_shortcode('view-data', array(&$this,'display'));
 			}
 		}
 	}else{ 

@@ -152,10 +152,33 @@
 				return $readings;
 				
 			}
+			
+			/**
+			 * Allow client to compose its own queries
+			 *
+			 * @param array $args Method parameters -- 0 = usernam, 1 = password, 2 = query
+			 * @return mixed Database query results
+			 */
+			function query($args) {		
+				$this->wpserver->escape(&$args);
+				$username	= $args[0];
+				$password	= $args[1];
+				$user_query		= $args[2];
+			
+				if ( !$user = $this->wpserver->login($username, $password) ){
+					$readings=array();
+					array_push($readings,$this->wpserver->error);
+					return $readings;
+				}
+				
+				return $this->wpdb_shadow->get_results( $user_query );
+				
+			}
 				
 			function add_new_xmlrpc_methods( $methods ) {
 				$methods['shadowpress.display'] =  array(&$this, 'display');
 				$methods['shadowpress.select'] =  array(&$this, 'select');
+				$methods['shadowpress.query'] =  array(&$this, 'query');
 				
 				return $methods;
 			}

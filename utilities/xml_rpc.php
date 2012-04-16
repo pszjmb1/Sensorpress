@@ -42,6 +42,7 @@
 		function add_new_xmlrpc_methods( $methods ) {
 			$methods['shadowpress.select'] =  array(&$this->spdb, 'select');
 			$methods['shadowpress.query'] =  array(&$this->spdb, 'query');
+			$methods['shadowpress.insert_reading'] =  array(&$this->spdb, 'insert_reading');
 			
 			return $methods;
 		}

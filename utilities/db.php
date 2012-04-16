@@ -43,7 +43,7 @@
 		}
 	
 		/**
-		 * Retrieve readings. Only allow returns of up to 10000 records
+		 * Retrieve items. Only allow returns of up to 10000 records
 		 *
 		 * @param array $args Method parameters.
 		 * @return array
@@ -76,6 +76,49 @@
 				
 		}
 	
+		/**
+		 * Insert a reading.
+		 *
+		 * @param array $args Method parameters.
+		 * @return array
+		 */
+		function insert_reading($args) {
+			$readings = array();
+			$this->wpserver->escape(&$args);
+			$username	= $args[0];
+			$password	= $args[1];
+			$data_type		= $args[2];
+			$value		= $args[3];
+			$readingset_id		= $args[4];
+			$reading_type		= $args[5];
+	
+			if ( !$user = $this->wpserver->login($username, $password) ){
+				array_push($readings,$this->wpserver->error);
+				return $readings;
+			}
+							
+			$query = 
+				"CALL insert_reading_$data_type( $value,$readingset_id,$reading_type )";
+				
+			$out = array();
+			//array_push($out,9999);
+			$results= $this->wpdb_shadow->get_results($query);
+			/*if(){
+				array_push($out,new IXR_Error(500, 'db_insert_error', 
+							'DB insertion failed.', $wpdb_shadow->last_error));
+				
+			}else{
+				array_push($out,(int) $wpdb_shadow->insert_id);
+			}
+			return $out;	*/
+			
+			foreach($results as $result) {
+				array_push($readings,$result);
+			}
+			return $readings;
+						
+		}
+		
 		/**
 		 * Allow client to compose its own queries
 		 *

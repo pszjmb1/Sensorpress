@@ -90,11 +90,11 @@ class Horz_JMB_ShadowDataView{
 	 */
 	function prepareOutput_Simple($myrows){
 		if($myrows){
-			$output = "";
+			$output = "<br/>";
 			foreach ( $myrows as $arow ){
 				if($arow){
 					foreach ( $arow as $item ){
-						$output=$output.$item;
+						$output=$output.$item.'<br/>';
 					}
 				}
 			}
@@ -102,16 +102,15 @@ class Horz_JMB_ShadowDataView{
 		return $output;
 	}
 
-	function display(){
+	/**
+	 * Shows direct access to DB -- discouraged...
+	 */
+	function display_old(){
 		//global $wpdb;
 		$reading='';
 
 		$output='<div class="viewdata"><table><tbody>';
-		//$myheadings = $this->wpdb_shadow->get_results( "show columns from horz_sp_reading" );
-		$args=array();
-		array_push($args,$this->settings->DB_USER,
-				$this->settings->DB_PASSWORD,'horz_sp_reading');
-		$myheadings = $this->spdb->columns($args);
+		$myheadings = $this->wpdb_shadow->get_results( "show columns from horz_sp_reading" );
 		$output =$this->prepareOutput_HTMLTable($myheadings,$output,'th');
 		$myrows = $this->wpdb_shadow->get_results( "SELECT * FROM horz_sp_reading LIMIT 10" );
 		$output = $this->prepareOutput_HTMLTable($myrows,$output);
@@ -119,6 +118,15 @@ class Horz_JMB_ShadowDataView{
 		//$a = new wp_xmlrpc_server();
 		//return $a->sayHello('');
 		return $output;
+	}
+
+	/**
+	 * Shows prefered DB access through Horz_JMB_ShadowDatabase object
+	 */
+	function display(){				
+		return $this->prepareOutput_Simple(
+				$this->spdb->select( array('','','reading',10) )
+				);
 	}
 
 

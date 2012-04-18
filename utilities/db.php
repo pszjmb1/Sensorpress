@@ -46,6 +46,7 @@
 		private $settings;
 		private $wpdb_shadow;
 		private $wpserver;
+		private $loggedin;
 	
 		function Horz_JMB_ShadowDatabase(){
 			$this->settings = new Horz_JMB_Settings();
@@ -53,23 +54,7 @@
 					$this->settings->DB_PASSWORD, $this->settings->DB_NAME,
 					$this->settings->DB_HOST);
 			$this->wpserver = new wp_xmlrpc_server();
-		}
-		
-		
-		/**
-		 * Sanitises arguments and ensures that there is access to the database.
-		 * @param $args is a list of arguments for database acecss and use. 
-		 * Presumes args[0] is username and args[1] is password
-		 * @return an empty array if successful, or an array with the error if unseuccessful
-		 */
-		function prepareForDBCall($args){
-			$output = array();
-			$this->wpserver->escape(&$args);
-			if ( !$user = $this->wpserver->login($args[0], $args[1]) ){
-				array_push($output,$this->wpserver->error);
-				return $output;
-			}
-			return $output;
+			$this->loggedin = false;
 		}
 		
 		/**
@@ -80,6 +65,7 @@
 		 * @return array
 		 */
 		function tables($args) {			
+			$this->wpserver->escape(&$args);
 			array_push($args,"SHOW TABLES;");
 			return $this->query($args);	
 		}
@@ -93,6 +79,7 @@
 		 * @return array
 		 */
 		function columns($args) {
+			$this->wpserver->escape(&$args);
 			$args[2] = "SHOW COLUMNS FROM $args[2]";
 			return $this->query($args);	
 		}
@@ -104,12 +91,9 @@
 		 * @return array
 		 */
 		function select($args) {
-			$output = $this->prepareForDBCall(&$args);
-			// check if DB access failed
-			if(1 == count($output)){
-				return $output;
-			}
-		
+			$this->wpserver->escape(&$args);
+			$output = array();
+			
 			$table		= $args[2];
 			$limit		= (int) $args[3];
 			
@@ -135,15 +119,11 @@
 		 * @return array
 		 */
 		function insert_reading($args) {
-			
-			$output = $this->prepareForDBCall(&$args);
-			// check if DB access failed
-			if(1 == count($output)){
-				return $output;
-			}
-			
-			$data_type		= $args[2];
-			$value		= $args[3];
+			$this->wpserver->escape(&$args);
+			$output = array();
+						
+			$data_type			= $args[2];
+			$value				= $args[3];
 			$readingset_id		= $args[4];
 			$reading_type		= $args[5];
 							
@@ -167,13 +147,9 @@
 		 * @return mixed Database query results
 		 */
 		function query($args) {
-			
-			$output = $this->prepareForDBCall(&$args);
-			// check if DB access failed
-			if(1 == count($output)){
-				return $output;
-			}
-			
+			$this->wpserver->escape(&$args);
+			$output = array();
+						
 			$user_query		= $args[2];
 			dbLog($args[2]);
 				

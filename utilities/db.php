@@ -20,7 +20,23 @@
 	include(HORZ_SP_UTILITES_DIR . '/settings.php');
 	require_once(ABSPATH . WPINC . '/class-IXR.php');
 	require_once(ABSPATH . WPINC . '/class-wp-xmlrpc-server.php');
-
+	
+	$db_logging = true;
+	
+	/**
+	 * Log to file
+	 *
+	 * @param $msg That which to log.
+	 */
+	function dbLog($msg) {
+		global $db_logging;
+		if ($db_logging) {
+			$fp = fopen(HORZ_SP_UTILITES_DIR.'/dblog.txt',"a+");
+			$date = gmdate("Y-m-d H:i:s ");
+			fwrite($fp, "\n\n".$date.$msg);
+			fclose($fp);
+		}
+	}
 	/**
 	 * Uses the shortcode method to output weather data from the DB to a WP page
 	 * @author pszjmb
@@ -37,9 +53,48 @@
 					$this->settings->DB_PASSWORD, $this->settings->DB_NAME,
 					$this->settings->DB_HOST);
 			$this->wpserver = new wp_xmlrpc_server();
-				
-			$this->plugin_url = trailingslashit(WP_PLUGIN_URL.'/'.
-					dirname(plugin_dir_path(__FILE__)));
+		}
+		
+		
+		/**
+		 * Sanitises arguments and ensures that there is access to the database.
+		 * @param $args is a list of arguments for database acecss and use. 
+		 * Presumes args[0] is username and args[1] is password
+		 * @return an empty array if successful, or an array with the error if unseuccessful
+		 */
+		function prepareForDBCall($args){
+			$output = array();
+			$this->wpserver->escape(&$args);
+			if ( !$user = $this->wpserver->login($args[0], $args[1]) ){
+				array_push($output,$this->wpserver->error);
+				return $output;
+			}
+			return $output;
+		}
+		
+		/**
+		 * Show Shadowpress tables.
+		 *
+		 * @param $args is a list of arguments for database acecss and use. 
+		 * Presumes args[0] is username and args[1] is password
+		 * @return array
+		 */
+		function tables($args) {			
+			array_push($args,"SHOW TABLES;");
+			return $this->query($args);	
+		}
+		
+		/**
+		 * Show Shadowpress tables.
+		 *
+		 * @param $args is a list of arguments for database acecss and use. 
+		 * Presumes args[0] is username, args[1] is password and 
+		 * args[2] is the table to display the columns for
+		 * @return array
+		 */
+		function columns($args) {
+			$args[2] = "SHOW COLUMNS FROM $args[2]";
+			return $this->query($args);	
 		}
 	
 		/**
@@ -49,30 +104,27 @@
 		 * @return array
 		 */
 		function select($args) {
-			$readings = array();
-			$this->wpserver->escape(&$args);
-			$username	= $args[0];
-			$password	= $args[1];
+			$output = $this->prepareForDBCall(&$args);
+			// check if DB access failed
+			if(1 == count($output)){
+				return $output;
+			}
+		
 			$table		= $args[2];
 			$limit		= (int) $args[3];
-	
-			if ( !$user = $this->wpserver->login($username, $password) ){
-				array_push($readings,$this->wpserver->error);
-				return $readings;
-			}
-				
+			
 			if(!$limit || $limit <1 || $limit > 9999)
 				$limit = 1;
 				
 			$query = "CALL selectrecent_$table( $limit )";
 				
-			//array_push($readings,$query);
+			//array_push($output,$query);
 			$results= $this->wpdb_shadow->get_results( $query );
 			foreach($results as $result) {
-				array_push($readings,$result);
+				array_push($output,$result);
 			}
 				
-			return $readings;
+			return $output;
 				
 		}
 	
@@ -83,39 +135,28 @@
 		 * @return array
 		 */
 		function insert_reading($args) {
-			$readings = array();
-			$this->wpserver->escape(&$args);
-			$username	= $args[0];
-			$password	= $args[1];
+			
+			$output = $this->prepareForDBCall(&$args);
+			// check if DB access failed
+			if(1 == count($output)){
+				return $output;
+			}
+			
 			$data_type		= $args[2];
 			$value		= $args[3];
 			$readingset_id		= $args[4];
 			$reading_type		= $args[5];
-	
-			if ( !$user = $this->wpserver->login($username, $password) ){
-				array_push($readings,$this->wpserver->error);
-				return $readings;
-			}
 							
 			$query = 
 				"CALL insert_reading_$data_type( $value,$readingset_id,$reading_type )";
 				
 			$out = array();
-			//array_push($out,9999);
 			$results= $this->wpdb_shadow->get_results($query);
-			/*if(){
-				array_push($out,new IXR_Error(500, 'db_insert_error', 
-							'DB insertion failed.', $wpdb_shadow->last_error));
-				
-			}else{
-				array_push($out,(int) $wpdb_shadow->insert_id);
-			}
-			return $out;	*/
 			
 			foreach($results as $result) {
-				array_push($readings,$result);
+				array_push($output,$result);
 			}
-			return $readings;
+			return $output;
 						
 		}
 		
@@ -126,16 +167,15 @@
 		 * @return mixed Database query results
 		 */
 		function query($args) {
-			$this->wpserver->escape(&$args);
-			$username	= $args[0];
-			$password	= $args[1];
-			$user_query		= $args[2];
-	
-			if ( !$user = $this->wpserver->login($username, $password) ){
-				$readings=array();
-				array_push($readings,$this->wpserver->error);
-				return $readings;
+			
+			$output = $this->prepareForDBCall(&$args);
+			// check if DB access failed
+			if(1 == count($output)){
+				return $output;
 			}
+			
+			$user_query		= $args[2];
+			dbLog($args[2]);
 				
 			return $this->wpdb_shadow->get_results( $user_query );
 				

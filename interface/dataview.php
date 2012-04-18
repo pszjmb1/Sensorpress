@@ -31,6 +31,7 @@ class Horz_JMB_ShadowDataView{
 	private $settings;
 	private $wpdb_shadow;
 	private $wpserver;
+	private $spdb;
 
 	function Horz_JMB_ShadowDataView(){
 		$this->settings = new Horz_JMB_Settings();
@@ -38,6 +39,7 @@ class Horz_JMB_ShadowDataView{
 				$this->settings->DB_PASSWORD, $this->settings->DB_NAME,
 				$this->settings->DB_HOST);
 		$this->wpserver = new wp_xmlrpc_server();
+		$this->spdb = new Horz_JMB_ShadowDatabase();
 	}
 
 	/**
@@ -73,11 +75,10 @@ class Horz_JMB_ShadowDataView{
 	
 	
 	function doQuery($queryIn){
-		$spdb = new Horz_JMB_ShadowDatabase();
 			
 		$args = array();
-		array_push($args,'shadowpress');
-		array_push($args,'fashted1h0W');
+		array_push($args,$this->settings->DB_USER);
+		array_push($args,$this->settings->DB_PASSWORD);
 		array_push($args,$queryIn);
 			
 		return $spdb->query($args);
@@ -106,7 +107,11 @@ class Horz_JMB_ShadowDataView{
 		$reading='';
 
 		$output='<div class="viewdata"><table><tbody>';
-		$myheadings = $this->wpdb_shadow->get_results( "show columns from horz_sp_reading" );
+		//$myheadings = $this->wpdb_shadow->get_results( "show columns from horz_sp_reading" );
+		$args=array();
+		array_push($args,$this->settings->DB_USER,
+				$this->settings->DB_PASSWORD,'horz_sp_reading');
+		$myheadings = $this->spdb->columns($args);
 		$output =$this->prepareOutput_HTMLTable($myheadings,$output,'th');
 		$myrows = $this->wpdb_shadow->get_results( "SELECT * FROM horz_sp_reading LIMIT 10" );
 		$output = $this->prepareOutput_HTMLTable($myrows,$output);

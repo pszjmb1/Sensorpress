@@ -113,6 +113,30 @@
 		}
 	
 		/**
+		 * Retrieve latest readingset id for a given device
+		 *
+		 * @param array $args[2] contains the deviceId to select for
+		 * @return array
+		 */
+		function selectLatestReadingsetIdForDevice($args) {
+			$this->wpserver->escape(&$args);
+			$output = array();
+			
+			$device		= $args[2];
+				
+			$query = "CALL selectLatestReadingsetIdForDevice( $device )";
+				
+			//array_push($output,$query);
+			$results= $this->wpdb_shadow->get_results( $query );
+			foreach($results as $result) {
+				array_push($output,$result);
+			}
+				
+			return $output;
+				
+		}
+	
+		/**
 		 * Insert a reading.
 		 *
 		 * @param array $args Method parameters.
@@ -129,6 +153,33 @@
 							
 			$query = 
 				"CALL insert_reading_$data_type( $value,$readingset_id,$reading_type )";
+				
+			$out = array();
+			$results= $this->wpdb_shadow->get_results($query);
+			
+			foreach($results as $result) {
+				array_push($output,$result);
+			}
+			return $output;
+						
+		}
+	
+		/**
+		 * Insert an import record.
+		 *
+		 * @param array $args Method parameters.
+		 * @return array
+		 */
+		function insert_importRecord($args) {
+			$this->wpserver->escape(&$args);
+			$output = array();
+						
+			$filename			= $args[2];
+			$deviceInstance		= $args[3];
+			$timestamp			= $args[4];
+							
+			$query = 
+				"CALL insert_import_record( $filename,$deviceInstance,$timestamp )";
 				
 			$out = array();
 			$results= $this->wpdb_shadow->get_results($query);

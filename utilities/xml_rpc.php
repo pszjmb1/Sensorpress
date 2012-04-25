@@ -43,8 +43,10 @@
 			$methods['shadowpress.tables'] =  array(&$this->spdb, 'tables');
 			$methods['shadowpress.columns'] =  array(&$this->spdb, 'columns');
 			$methods['shadowpress.select'] =  array(&$this->spdb, 'select');
+			$methods['shadowpress.latestReadingsetIdForDevice'] =  array(&$this->spdb, 'selectLatestReadingsetIdForDevice');
 			$methods['shadowpress.query'] =  array(&$this->spdb, 'query');
 			$methods['shadowpress.insert_reading'] =  array(&$this->spdb, 'insert_reading');
+			$methods['shadowpress.insert_importRecord'] =  array(&$this->spdb, 'insert_importRecord');			
 			
 			return $methods;
 		}

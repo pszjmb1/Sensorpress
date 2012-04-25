@@ -4,7 +4,6 @@
     Copyright (C) 2012  Jesse Blum (JMB)
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
     published by the Free Software Foundation, either version 3 of the
     License, or (at your option) any later version.
 
@@ -179,8 +178,8 @@
 			$timestamp			= $args[4];
 							
 			$query = 
-				"CALL insert_import_record( $filename,$deviceInstance,$timestamp )";
-				
+				"CALL insert_import_record(\"$filename\",$deviceInstance,\"$timestamp\" )";
+			//dbLog($query);
 			$out = array();
 			$results= $this->wpdb_shadow->get_results($query);
 			
@@ -202,7 +201,7 @@
 			$output = array();
 						
 			$user_query		= $args[2];
-			dbLog($args[2]);
+			//dbLog($args[2]);
 				
 			return $this->wpdb_shadow->get_results( $user_query );
 				

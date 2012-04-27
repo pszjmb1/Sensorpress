@@ -189,6 +189,31 @@
 			return $output;
 						
 		}
+	
+		/**
+		 * Insert an import record.
+		 *
+		 * @param array $args Method parameters.
+		 * @return array
+		 */
+		function select_lastimportRecord($args) {
+			$this->wpserver->escape(&$args);
+			$output = array();
+						
+			$filename			= $args[2];
+			$deviceInstance		= $args[3];
+							
+			$query = 
+				"CALL selectLastImportRecord(\"$filename\",$deviceInstance)";
+			dbLog($query);
+			$out = array();
+			$results= $this->wpdb_shadow->get_results($query);
+			
+			foreach($results as $result) {
+				array_push($output,$result);
+			}
+			return $output;						
+		}
 		
 		/**
 		 * Allow client to compose its own queries
@@ -197,11 +222,11 @@
 		 * @return mixed Database query results
 		 */
 		function query($args) {
-			$this->wpserver->escape(&$args);
+			//$this->wpserver->escape(&$args);
 			$output = array();
 						
 			$user_query		= $args[2];
-			//dbLog($args[2]);
+			dbLog($args[2]);
 				
 			return $this->wpdb_shadow->get_results( $user_query );
 				

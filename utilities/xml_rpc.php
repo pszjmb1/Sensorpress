@@ -46,7 +46,8 @@
 			$methods['shadowpress.latestReadingsetIdForDevice'] =  array(&$this->spdb, 'selectLatestReadingsetIdForDevice');
 			$methods['shadowpress.query'] =  array(&$this->spdb, 'query');
 			$methods['shadowpress.insert_reading'] =  array(&$this->spdb, 'insert_reading');
-			$methods['shadowpress.insert_importRecord'] =  array(&$this->spdb, 'insert_importRecord');			
+			$methods['shadowpress.insert_importRecord'] =  array(&$this->spdb, 'insert_importRecord');
+			$methods['shadowpress.select_lastimportRecord'] =  array(&$this->spdb, 'select_lastimportRecord');			
 			
 			return $methods;
 		}

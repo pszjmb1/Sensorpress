@@ -197,7 +197,7 @@
 		 * @return mixed Database query results
 		 */
 		function query($args) {
-			//$this->wpserver->escape(&$args);
+			$this->wpserver->escape(&$args);
 			$output = array();
 						
 			$user_query		= $args[2];

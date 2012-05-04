@@ -30,6 +30,7 @@
 	function dbLog($msg) {
 		global $db_logging;
 		if ($db_logging) {
+			//echo HORZ_SP_UTILITES_DIR.'/dblog.txt';
 			$fp = fopen(HORZ_SP_UTILITES_DIR.'/dblog.txt',"a+");
 			$date = gmdate("Y-m-d H:i:s ");
 			fwrite($fp, "\n\n".$date.$msg);

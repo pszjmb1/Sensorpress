@@ -1,6 +1,6 @@
 <?php
 
-/* Provides Horz_JMB_ShadowDatabase which interacts with the ShadowPress mysql DB.
+/* Provides Horz_JMB_SensorDatabase which interacts with the SensorPress mysql DB.
     Copyright (C) 2012  Jesse Blum (JMB)
 
     This program is free software: you can redistribute it and/or modify
@@ -41,15 +41,15 @@
 	 * @author pszjmb
 	 *
 	 */
-	class Horz_JMB_ShadowDatabase{
+	class Horz_JMB_SensorDatabase{
 		private $settings;
-		private $wpdb_shadow;
+		private $wpdb_sensor;
 		private $wpserver;
 		private $loggedin;
 	
-		function Horz_JMB_ShadowDatabase(){
+		function Horz_JMB_SensorDatabase(){
 			$this->settings = new Horz_JMB_Settings();
-			$this->wpdb_shadow = new wpdb($this->settings->DB_USER,
+			$this->wpdb_sensor = new wpdb($this->settings->DB_USER,
 					$this->settings->DB_PASSWORD, $this->settings->DB_NAME,
 					$this->settings->DB_HOST);
 			$this->wpserver = new wp_xmlrpc_server();
@@ -57,7 +57,7 @@
 		}
 		
 		/**
-		 * Show Shadowpress tables.
+		 * Show Sensorpress tables.
 		 *
 		 * @param $args is a list of arguments for database acecss and use. 
 		 * Presumes args[0] is username and args[1] is password
@@ -70,7 +70,7 @@
 		}
 		
 		/**
-		 * Show Shadowpress tables.
+		 * Show Sensorpress tables.
 		 *
 		 * @param $args is a list of arguments for database acecss and use. 
 		 * Presumes args[0] is username, args[1] is password and 
@@ -102,7 +102,7 @@
 			$query = "CALL selectrecent_$table( $limit )";
 				
 			//array_push($output,$query);
-			$results= $this->wpdb_shadow->get_results( $query );
+			$results= $this->wpdb_sensor->get_results( $query );
 			foreach($results as $result) {
 				array_push($output,$result);
 			}
@@ -126,7 +126,7 @@
 			$query = "CALL selectLatestReadingsetIdForDevice( $device )";
 				
 			//array_push($output,$query);
-			$results= $this->wpdb_shadow->get_results( $query );
+			$results= $this->wpdb_sensor->get_results( $query );
 			foreach($results as $result) {
 				array_push($output,$result);
 			}
@@ -154,7 +154,7 @@
 				"CALL insert_reading_$data_type( $value,$readingset_id,$reading_type )";
 				
 			$out = array();
-			$results= $this->wpdb_shadow->get_results($query);
+			$results= $this->wpdb_sensor->get_results($query);
 			
 			foreach($results as $result) {
 				array_push($output,$result);
@@ -181,7 +181,7 @@
 				"CALL insert_import_record(\"$filename\",$deviceInstance,\"$timestamp\" )";
 			//dbLog($query);
 			$out = array();
-			$results= $this->wpdb_shadow->get_results($query);
+			$results= $this->wpdb_sensor->get_results($query);
 			
 			foreach($results as $result) {
 				array_push($output,$result);
@@ -207,7 +207,7 @@
 				"CALL selectLastImportRecord(\"$filename\",$deviceInstance)";
 			dbLog($query);
 			$out = array();
-			$results= $this->wpdb_shadow->get_results($query);
+			$results= $this->wpdb_sensor->get_results($query);
 			
 			foreach($results as $result) {
 				array_push($output,$result);
@@ -228,7 +228,7 @@
 			$user_query		= $args[2];
 			dbLog($args[2]);
 				
-			return $this->wpdb_shadow->get_results( $user_query );
+			return $this->wpdb_sensor->get_results( $user_query );
 				
 		}
 	}

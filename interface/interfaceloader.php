@@ -9,7 +9,7 @@
 	// Require interface files
 	require( HORZ_SP_INTERFACE_DIR . '/dataview.php'     );
 	
-	$sdv = new Horz_JMB_ShadowDataView();
+	$sdv = new Horz_JMB_SensorDataView();
 	if(isset($sdv)){
 		//Register the short codes
 		$sdv->registerShortcodes();

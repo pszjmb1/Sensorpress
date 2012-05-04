@@ -1,6 +1,6 @@
 <?php
 
-/* Provides Horz_JMB_ShadowDB_XML_RPC which provides access to Horz_JMB_ShadowDatabase
+/* Provides Horz_JMB_SensorDB_XML_RPC which provides access to Horz_JMB_SensorDatabase
    through XML-RPC.
     Copyright (C) 2012  Jesse Blum (JMB)
 
@@ -27,11 +27,11 @@
 	 * @author pszjmb
 	 *
 	 */
-	class Horz_JMB_ShadowDB_XML_RPC{
+	class Horz_JMB_SensorDB_XML_RPC{
 		private $spdb;
 		
-		function Horz_JMB_ShadowDB_XML_RPC(){
-			$this->spdb = new Horz_JMB_ShadowDatabase();
+		function Horz_JMB_SensorDB_XML_RPC(){
+			$this->spdb = new Horz_JMB_SensorDatabase();
 		}
 
 		/**
@@ -40,14 +40,14 @@
 		 * @return $methods
 		 */
 		function add_new_xmlrpc_methods( $methods ) {
-			$methods['shadowpress.tables'] =  array(&$this->spdb, 'tables');
-			$methods['shadowpress.columns'] =  array(&$this->spdb, 'columns');
-			$methods['shadowpress.select'] =  array(&$this->spdb, 'select');
-			$methods['shadowpress.latestReadingsetIdForDevice'] =  array(&$this->spdb, 'selectLatestReadingsetIdForDevice');
-			$methods['shadowpress.query'] =  array(&$this->spdb, 'query');
-			$methods['shadowpress.insert_reading'] =  array(&$this->spdb, 'insert_reading');
-			$methods['shadowpress.insert_importRecord'] =  array(&$this->spdb, 'insert_importRecord');
-			$methods['shadowpress.select_lastimportRecord'] =  array(&$this->spdb, 'select_lastimportRecord');			
+			$methods['sensorpress.tables'] =  array(&$this->spdb, 'tables');
+			$methods['sensorpress.columns'] =  array(&$this->spdb, 'columns');
+			$methods['sensorpress.select'] =  array(&$this->spdb, 'select');
+			$methods['sensorpress.latestReadingsetIdForDevice'] =  array(&$this->spdb, 'selectLatestReadingsetIdForDevice');
+			$methods['sensorpress.query'] =  array(&$this->spdb, 'query');
+			$methods['sensorpress.insert_reading'] =  array(&$this->spdb, 'insert_reading');
+			$methods['sensorpress.insert_importRecord'] =  array(&$this->spdb, 'insert_importRecord');
+			$methods['sensorpress.select_lastimportRecord'] =  array(&$this->spdb, 'select_lastimportRecord');			
 			
 			return $methods;
 		}

@@ -1,16 +1,15 @@
 <?php
 	/*
-		Plugin Name: ShadowPress
+		Plugin Name: Sensorpress
 		Plugin URI: n/a
-		Description: Sensor data logging for WordPress. Connect information from your community or school with your blog and the rest of the world.
-		Version: 0.3
+		Description: Sensor data I/O for WordPress. Connect information from your community or school with your blog and the rest of the world.
+		Version: 0.4
 		Author: JMB
 		Author URI: n/a
 		License: AGPLv3
 	*/
 	
-	/* Shadow Data View displays data from the ShadowPress mysql DB.
-	    Copyright (C) 2012  Jesse Blum (JMB)
+	/*  Copyright (C) 2012  Jesse Blum (JMB)
 	
 	    This program is free software: you can redistribute it and/or modify
 	    it under the terms of the GNU Affero General Public License as
@@ -31,7 +30,7 @@
 	
 	global $wpdb;
 	
-	// Define the ShadowPress version
+	// Define the SensorPress version
 	if ( !defined( 'HORZ_SP_VERSION' ) )
 		define( 'HORZ_SP_VERSION', '0.3' );
 	
@@ -41,9 +40,9 @@
 	
 	// Define the plugin name
 	if ( !defined( 'HORZ_SP_NAME' ) )
-		define( 'HORZ_SP_NAME', 'ShadowPress' );
+		define( 'HORZ_SP_NAME', 'SensorPress' );
 	
-	// Define the ShadowPress blog id -- idea courtesy of Buddypress
+	// Define the SensorPress blog id -- idea courtesy of Buddypress
 	if ( !defined( 'HORZ_SP_ROOT_BLOG' ) ) {
 		if( !is_multisite() ) {
 			$_id = 1;
@@ -58,10 +57,10 @@
 	
 	// Path and URL
 	if ( !defined( 'HORZ_SP_PLUGIN_DIR' ) )
-		define( 'HORZ_SP_PLUGIN_DIR', WP_PLUGIN_DIR . '/Shadowpress' );
+		define( 'HORZ_SP_PLUGIN_DIR', WP_PLUGIN_DIR . '/sensorpress' );
 	
 	if ( !defined( 'HORZ_SP_PLUGIN_URL' ) )
-		define( 'HORZ_SP_PLUGIN_URL', plugins_url( 'Shadowpress' ) );
+		define( 'HORZ_SP_PLUGIN_URL', plugins_url( 'sensorpress' ) );
 	
 	/**
 	 * Exits the plugin if the WP version is lower than $minver 

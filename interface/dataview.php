@@ -1,6 +1,6 @@
 <?php
 
-/* Shadow Data View displays data from the ShadowPress mysql DB.
+/* Dataview displays data from the Sensorpress mysql DB.
  Copyright (C) 2012  Jesse Blum (JMB)
 
 This program is free software: you can redistribute it and/or modify
@@ -27,19 +27,19 @@ require_once( HORZ_SP_UTILITES_DIR . '/db.php'     );
  * @author pszjmb
  *
  */
-class Horz_JMB_ShadowDataView{
+class Horz_JMB_SensorDataView{
 	private $settings;
-	private $wpdb_shadow;
+	private $wpdb_sensor;
 	private $wpserver;
 	private $spdb;
 
-	function Horz_JMB_ShadowDataView(){
+	function Horz_JMB_SensorDataView(){
 		$this->settings = new Horz_JMB_Settings();
-		$this->wpdb_shadow = new wpdb($this->settings->DB_USER,
+		$this->wpdb_sensor = new wpdb($this->settings->DB_USER,
 				$this->settings->DB_PASSWORD, $this->settings->DB_NAME,
 				$this->settings->DB_HOST);
 		$this->wpserver = new wp_xmlrpc_server();
-		$this->spdb = new Horz_JMB_ShadowDatabase();
+		$this->spdb = new Horz_JMB_SensorDatabase();
 	}
 
 	/**
@@ -110,9 +110,9 @@ class Horz_JMB_ShadowDataView{
 		$reading='';
 
 		$output='<div class="viewdata"><table><tbody>';
-		$myheadings = $this->wpdb_shadow->get_results( "show columns from horz_sp_reading" );
+		$myheadings = $this->wpdb_sensor->get_results( "show columns from horz_sp_reading" );
 		$output =$this->prepareOutput_HTMLTable($myheadings,$output,'th');
-		$myrows = $this->wpdb_shadow->get_results( "SELECT * FROM horz_sp_reading LIMIT 10" );
+		$myrows = $this->wpdb_sensor->get_results( "SELECT * FROM horz_sp_reading LIMIT 10" );
 		$output = $this->prepareOutput_HTMLTable($myrows,$output);
 		$output=$output.'</tbody></table></div>';
 		//$a = new wp_xmlrpc_server();
@@ -121,7 +121,7 @@ class Horz_JMB_ShadowDataView{
 	}
 
 	/**
-	 * Shows prefered DB access through Horz_JMB_ShadowDatabase object
+	 * Shows prefered DB access through Horz_JMB_SensorDatabase object
 	 */
 	function display(){				
 		return $this->prepareOutput_Simple(

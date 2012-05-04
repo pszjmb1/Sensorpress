@@ -11,9 +11,9 @@
 	require_once( HORZ_SP_UTILITES_DIR . '/xml_rpc.php'     );
 	
 		
-	$spdbxml = new Horz_JMB_ShadowDB_XML_RPC();
+	$spdbxml = new Horz_JMB_SensorDB_XML_RPC();
 	if(isset($spdbxml)){
-		// Pass the Wordpress xmlrpc methods filter data to the ShadowDataView add_new_xmlrpc_methods function
+		// Pass the Wordpress xmlrpc methods filter data to the SensorDataView add_new_xmlrpc_methods function
 		add_filter( 'xmlrpc_methods', array(&$spdbxml, 'add_new_xmlrpc_methods'));
 	}
 ?>

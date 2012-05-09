@@ -137,6 +137,42 @@
 		}
 	
 		/**
+		 * Retrieve latest readingset id for a given device
+		 *
+		 * @param array $args[2] contains the deviceId
+		 * @param array $args[3] contains the reading_type_id
+		 * @param array $args[4] contains the datatype
+		 * @param array $args[5] contains the start datetime
+		 * @param array $args[6] contains the stop datetime
+		 * @return array
+		 */
+		function selectReadingsForDeviceInstanceByDateRange($args) {
+			$this->wpserver->escape(&$args);
+			$output = array();
+			
+			$device					= $args[2];
+			$reading_type_id		= $args[3];
+			$datatype				= $args[4];
+			$startdatetime			= $args[5];
+			$stopdatetime			= $args[6];
+				
+			$query = "CALL selectreadings_forDevInst_byDateRange( 
+				$device,$reading_type_id,\"$datatype\",
+				\"$startdatetime\",\"$stopdatetime\")";
+			dbLog($query);
+				
+			//array_push($output,$query);
+			$results= $this->wpdb_sensor->get_results( $query );
+			foreach($results as $result) {
+				array_push($output,$result);
+			}
+				
+			return $output;
+				
+		}
+	
+	
+		/**
 		 * Insert a reading.
 		 *
 		 * @param array $args Method parameters.
@@ -192,7 +228,7 @@
 		}
 	
 		/**
-		 * Insert an import record.
+		 * Select the last import record.
 		 *
 		 * @param array $args Method parameters.
 		 * @return array
@@ -206,6 +242,30 @@
 							
 			$query = 
 				"CALL selectLastImportRecord(\"$filename\",$deviceInstance)";
+			dbLog($query);
+			$out = array();
+			$results= $this->wpdb_sensor->get_results($query);
+			
+			foreach($results as $result) {
+				array_push($output,$result);
+			}
+			return $output;						
+		}
+	
+		/**
+		 * select the lowestReadingIdForReadingSetTimestamp
+		 * Note that this is a "public" access routine and does not require username or password 
+		 * @param array $args Method parameters.
+		 * @return array
+		 */
+		function select_lowestReadingIdForReadingSetTimestamp($args) {
+			$this->wpserver->escape(&$args);
+			$output = array();
+						
+			$timestamp			= $args[0];
+							
+			$query = 
+				"CALL select_lowestReadingIdForReadingSetTimestamp(\"$timestamp\")";
 			dbLog($query);
 			$out = array();
 			$results= $this->wpdb_sensor->get_results($query);

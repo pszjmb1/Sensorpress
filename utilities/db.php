@@ -137,6 +137,25 @@
 		}
 	
 		/**
+		 * Retrieve latest readingset id
+		 * @return array
+		 */
+		function selectLatestReadingsetId($args) {
+			$this->wpserver->escape(&$args);
+			$output = array();
+				
+			$query = "CALL selectLatestReadingsetId()";
+				
+			$results= $this->wpdb_sensor->get_results( $query );
+			foreach($results as $result) {
+				array_push($output,$result);
+			}
+				
+			return $output;
+				
+		}
+	
+		/**
 		 * Retrieve latest readingset id for a given device
 		 *
 		 * @param array $args[2] contains the deviceId

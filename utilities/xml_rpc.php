@@ -44,6 +44,7 @@
 			$methods['sensorpress.columns'] =  array(&$this->spdb, 'columns');
 			$methods['sensorpress.select'] =  array(&$this->spdb, 'select');
 			$methods['sensorpress.latestReadingsetIdForDevice'] =  array(&$this->spdb, 'selectLatestReadingsetIdForDevice');
+			$methods['sensorpress.latestReadingsetId'] =  array(&$this->spdb, 'selectLatestReadingsetId');
 			$methods['sensorpress.readingsForDeviceInstanceByDateRange'] =  array(&$this->spdb, 'selectReadingsForDeviceInstanceByDateRange');
 			$methods['sensorpress.query'] =  array(&$this->spdb, 'query');
 			$methods['sensorpress.insert_reading'] =  array(&$this->spdb, 'insert_reading');
